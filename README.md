@@ -1,36 +1,201 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 📸 Photography Listing App
 
-## Getting Started
+A responsive web application for browsing and filtering photographers by various criteria. This project demonstrates advanced front-end development skills including state management, filtering logic, and responsive UI design.
 
-First, run the development server:
+---
+
+## 🚀 Features
+
+* 📷 **Photographer Listing Page** with grid view of photographer cards
+* 🧠 **Advanced Filtering** by price range, rating, styles, and location
+* 🔍 **Search Functionality** with debounced input for performance
+* ↕️ **Sorting Options** by rating, price, and recency
+* 📱 **Responsive Design** for mobile, tablet, and desktop
+* 👤 **Photographer Profile Pages** with portfolio gallery and reviews
+* ✉️ **Inquiry Modal** for contacting photographers
+
+---
+
+## 🌐 Live Demo
+
+Check out the live application: [Photography Listing App](https://pixisphere-murex.vercel.app/) <!-- Replace with actual link if available -->
+
+---
+
+## 🛠 Tech Stack
+
+* **Framework:** Next.js (React)
+* **Styling:** Tailwind CSS
+* **State Management:** React Hooks (`useState`, `useEffect`, `useContext`)
+* **HTTP Client:** Axios
+* **UI Components:** `rc-slider` for range sliders, `react-icons` for icons
+
+---
+
+## ⚙️ Setup Instructions
+
+### 🔧 Prerequisites
+
+* Node.js (v14 or later)
+* npm or yarn
+
+### 📦 Installation
+
+```bash
+git clone https://github.com/your-username/photography-listing-app.git
+cd photography-listing-app
+
+# Install dependencies
+npm install
+# or
+yarn install
+```
+
+### 🧪 Run the development server
 
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open your browser and navigate to `http://localhost:3000`
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🗄 Using with JSON Server (Optional)
 
-## Learn More
+To simulate a realistic API:
 
-To learn more about Next.js, take a look at the following resources:
+1. **Install JSON Server globally**
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm install -g json-server
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+2. **Create a `db.json` file** in the project root with photographer data (sample included)
 
-## Deploy on Vercel
+3. **Run JSON Server**
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+json-server --watch db.json --port 3001
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+4. **Update API URL** in `services/api.js` to:
+
+```js
+http://localhost:3001/photographers
+```
+
+---
+
+## 🧠 Implementation Notes
+
+### 🔍 Filtering Logic
+
+```js
+const applyFilters = () => {
+  let results = [...photographers];
+
+  // Search filter
+  if (filters.search) {
+    const searchTerm = filters.search.toLowerCase();
+    results = results.filter(
+      (item) =>
+        item.name.toLowerCase().includes(searchTerm) ||
+        item.location.toLowerCase().includes(searchTerm) ||
+        item.tags.some((tag) => tag.toLowerCase().includes(searchTerm))
+    );
+  }
+
+  // Price range filter
+  results = results.filter(
+    (item) =>
+      item.price >= filters.priceRange[0] &&
+      item.price <= filters.priceRange[1]
+  );
+
+  // Additional filters...
+
+  setFilteredPhotographers(results);
+};
+```
+
+### ⏳ Debouncing (Custom Hook)
+
+```js
+export function useDebounce(value, delay) {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+}
+```
+
+Used in:
+
+* Search input (to delay filtering)
+* Price range slider (to delay updates)
+
+### 🔃 Sorting Implementation
+
+```js
+switch (filters.sortBy) {
+  case "price-asc":
+    results.sort((a, b) => a.price - b.price);
+    break;
+  case "rating-desc":
+    results.sort((a, b) => b.rating - a.rating);
+    break;
+  case "recent":
+    results.sort((a, b) => b.id - a.id);
+    break;
+  default:
+    results.sort((a, b) => b.rating - a.rating);
+    break;
+}
+```
+
+---
+
+## 🚀 State Management
+
+* Local component state using `useState`
+* Prop drilling for closely related components
+* `useEffect` for API calls and filtering
+* Could scale with Context API or libraries like Redux or Zustand
+
+---
+
+## 🚀 Future Enhancements
+
+* Server-side filtering and pagination
+* User authentication and saved favorites
+* Real-time chat with photographers
+* Booking/scheduling system
+* Autocomplete and fuzzy search
+
+---
+
+## 👤 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+---
+
+## 🔒 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+> Developed with ❤️ as a frontend development showcase project.
